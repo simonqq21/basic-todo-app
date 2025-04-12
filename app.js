@@ -16,42 +16,111 @@ const knex = require("knex")({
   },
 });
 
-knex.schema.createTable('users2', function (table) {
-  table.increments();
-  table.string('name');
-  table.timestamps();
-}).then(() => {
-  console.log("iuop");
-}).catch((error) => {
-  console.log(`${error}`);
+/**
+ * todo list schema:
+ * id - int
+ *  created_at_ts    -   datetime
+ *  updated_at_ts   -   datetime
+ *  written_by  -   string
+ *  title   -   string
+ *  body    -   string
+ *  completed   -    bool
+ *  image   -   blob
+ */
+knex.schema.createTable('todos', function (table) {
+  table.increments("id");
+  table.bigInteger("created_at_ts").notNullable().defaultTo(Date.now());
+  table.bigInteger("updated_at_ts").notNullable().defaultTo(Date.now());
+  table.string("written_by", 50).notNullable();
+  table.string("title", 100).notNullable();
+  table.string("body", 2000);
+  table.boolean("completed").notNullable().defaultTo(false);
+})
+.then(() => {
+  console.log("create todos schema success");
+})
+.catch((error) => {
+  console.log(`${JSON.stringify(error)}, ${error}`);
 });
 
-
-// await knex.schema.createTable('users', function (table) {
-//   table.increments();
-//   table.string('name');
-//   table.timestamps();
-// }).then().catch(() => {
-//   console.log('qwerty');
-// });
-
-// try {
-//   pg.schema.createTable('users', function (table) {
-//     table.increments();
-//     table.string('name');
-//     table.timestamps();
-    
-//   }).then(() => {
-//     console.log('table created.');
+// drop_tables = true
+// drop_tables = false
+// if (drop_tables) {
+//   knex.schema.dropTable('todos')
+//   .then(() => {
+//     console.log("drop success");
+//   })
+//   .catch((error) => {
+//     console.log(`${error}`);
 //   });
-// } catch (error) {
-//   console.log("db authentication error.");
 // }
 
+// knex('todos').insert([
+//   {written_by: 'simonque', title: "My first todo"},
+//   {written_by: 'simonque', title: "My second todo"},
+//   {written_by: 'simonque', title: "My third todo"},
+// ])
+// .then(() => {
+//   console.log('inserted successfully');
+// })
+// .catch((error) => {
+//   console.log(`failed to insert: ${error}`);
+// });
 
-// console.log("oiaioiiiai");
-// let users = pg.select().table('users');
-// console.log(`users=${users}`);
+// knex('todos').select()
+// .then((todos) => {
+//   console.log('todos = \n');
+//   for (const todo of todos) {
+//     console.log(`${JSON.stringify(todo)}`);
+//   }
+//   // console.log(`todos = ${JSON.stringify(todos)}`);
+// });
+
+// knex('todos').update({written_by: "johannque"})
+// .where('id', '=', '2')
+// .then(() => {
+//   console.log('updated sucessfully');
+// })
+// .catch((error) => {
+//   console.log(`failed to update: ${error}`);
+// });
+
+// knex('todos').update({written_by: "sjque"})
+// .where('id', '=', '2')
+// .where('written_by', '=', 'johannque')
+// .then(() => {
+//   console.log('updated sucessfully');
+// })
+// .catch((error) => {
+//   console.log(`failed to update: ${error}`);
+// });
+// console.log();
+
+// knex('todos').select()
+// .where('id', '>', 2)
+// .then((todos) => {
+//   console.log('todos = \n');
+//   for (const todo of todos) {
+//     console.log(`${JSON.stringify(todo)}`);
+//   }
+//   // console.log(`todos = ${JSON.stringify(todos)}`);
+// });
+
+// knex('todos').delete()
+// .where('id', '>', 3)
+// .then(() => {
+//   console.log('deleted successfully');
+//   knex('todos').select()
+//   .then((todos) => {
+//     console.log('todos = \n');
+//     for (const todo of todos) {
+//       console.log(`${JSON.stringify(todo)}`);
+//     }
+//   });
+// })
+// .catch((error) => {
+//   console.log(`failed to delete: ${error}`);
+// });
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
