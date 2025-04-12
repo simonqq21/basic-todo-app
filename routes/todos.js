@@ -86,11 +86,13 @@ router.get('/:id', (req, res) => {
 
 // route to create a new todo
 router.post('/', (req, res) => {
-    knex('todos').insert([
-        {written_by: 'simonque', title: "My first todo"},
-        {written_by: 'simonque', title: "My second todo"},
-        {written_by: 'simonque', title: "My third todo"},
-    ])
+    knex('todos').insert({
+        created_at_ts: Date.now(),
+        written_by: req.body.written_by, 
+        title: req.body.title,
+        body: req.body.body,
+        completed: false,
+    })
     .then(() => {
         console.log('inserted successfully');
     })
@@ -101,45 +103,39 @@ router.post('/', (req, res) => {
 
 // route to replace an existing todo
 router.put('/:id', (req, res) => {
-  // knex('todos').update({written_by: "johannque"})
-  // .where('id', '=', '2')
-  // .then(() => {
-  //   console.log('updated sucessfully');
-  // })
-  // .catch((error) => {
-  //   console.log(`failed to update: ${error}`);
-  // });
+  knex('todos').update({written_by: "johannque"})
+  .where('id', '=', '2')
+  .then(() => {
+    console.log('updated sucessfully');
+  })
+  .catch((error) => {
+    console.log(`failed to update: ${error}`);
+  });
   
-  // knex('todos').update({written_by: "sjque"})
-  // .where('id', '=', '2')
-  // .where('written_by', '=', 'johannque')
-  // .then(() => {
-  //   console.log('updated sucessfully');
-  // })
-  // .catch((error) => {
-  //   console.log(`failed to update: ${error}`);
-  // });
-  // console.log();
+  knex('todos').update({written_by: "sjque"})
+  .where('id', '=', '2')
+  .where('written_by', '=', 'johannque')
+  .then(() => {
+    console.log('updated sucessfully');
+  })
+  .catch((error) => {
+    console.log(`failed to update: ${error}`);
+  });
+  console.log();
 });
 
 // route to update an existing todo 
 router.patch('/:id', (req, res) => {
-
+    
 });
 
 // route to delete an existing todo
 router.delete('/:id', (req, res) => {
+    const id = req.params.id;
     knex('todos').delete()
-    .where('id', '>', 3)
+    .where('id', id)
     .then(() => {
         console.log('deleted successfully');
-        knex('todos').select()
-        .then((todos) => {
-        console.log('todos = \n');
-        for (const todo of todos) {
-            console.log(`${JSON.stringify(todo)}`);
-        }
-        });
     })
     .catch((error) => {
         console.log(`failed to delete: ${error}`);
