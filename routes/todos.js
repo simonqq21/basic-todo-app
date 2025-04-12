@@ -48,40 +48,41 @@ const knex = knex1(knexfile.production);
 // route to get all todos
 router.get('/', (req, res) => {
     knex('todos').select()
+    .orderBy('id', order='asc')
     .then((todos) => {
-      console.log('todos = \n');
-      for (const todo of todos) {
-        console.log(`${JSON.stringify(todo)}`);
-      }
-      // console.log(`todos = ${JSON.stringify(todos)}`);
+        let count = todos.length;
+      res.json({todos, count});
+    })
+    .catch((error) => {
+        console.log(`error GET todos/: ${error}`);
     });
-    res.json({text: "hello world from todo app autoreloaded!!!"});
 });
 
 // route to get a single todo 
 router.get('/:id', (req, res) => {
+    const id = req.params.id;
     knex('todos').select()
-    .where('id', '>', 2)
-    .then((todos) => {
-    console.log('todos = \n');
-    for (const todo of todos) {
-        console.log(`${JSON.stringify(todo)}`);
-    }
-    // console.log(`todos = ${JSON.stringify(todos)}`);
+    .where('id', id)
+    .first()
+    .then((todo) => {
+        res.json({todo});
+    })
+    .catch((error) => {
+        console.log(`error GET todos/:id: ${error}`);
     });
 });
 
-knex('todos').insert([
-    {written_by: 'simonque', title: "My first todo"},
-    {written_by: 'simonque', title: "My second todo"},
-    {written_by: 'simonque', title: "My third todo"},
-])
-.then(() => {
-    console.log('inserted successfully');
-})
-.catch((error) => {
-    console.log(`failed to insert: ${error}`);
-});
+// knex('todos').insert([
+//     {written_by: 'simonque', title: "My first todo"},
+//     {written_by: 'simonque', title: "My second todo"},
+//     {written_by: 'simonque', title: "My third todo"},
+// ])
+// .then(() => {
+//     console.log('inserted successfully');
+// })
+// .catch((error) => {
+//     console.log(`failed to insert: ${error}`);
+// });
 
 // route to create a new todo
 router.post('/', (req, res) => {
