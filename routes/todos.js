@@ -4,9 +4,9 @@ var router = express.Router();
 process.env.NODE_ENV = 'production';
 console.log(`${process.env.NODE_ENV}`);
 
-const knex = require("knex");
+const knex1 = require("knex");
 const knexfile = require("../knexfile"); 
-const db = knex(knexfile.production);
+const knex = knex1(knexfile.production);
 
 // const knex = require("knex")({
 //     client: 'pg',
@@ -71,7 +71,7 @@ router.get('/:id', (req, res) => {
     });
 });
 
-db('todos').insert([
+knex('todos').insert([
     {written_by: 'simonque', title: "My first todo"},
     {written_by: 'simonque', title: "My second todo"},
     {written_by: 'simonque', title: "My third todo"},
