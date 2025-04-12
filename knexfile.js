@@ -11,7 +11,6 @@ module.exports = {
       filename: './dev.sqlite3',
     }
   },
-
   staging: {
     client: 'postgresql',
     connection: {
@@ -28,20 +27,35 @@ module.exports = {
     }
   },
 
-  production: {
-    client: 'postgresql',
+  production: 
+  {
+    client: 'pg',
     connection: {
-      database: 'my_db',
-      user:     'username',
-      password: 'password'
-    },
-    pool: {
-      min: 2,
-      max: 10
+      host: '192.168.5.145',
+      port: 5432,
+      user: 'pguser',
+      database: 'todo_app_db',
+      password: 'Y8y8y8y8!',
+      ssl: false,
     },
     migrations: {
-      tableName: 'knex_migrations'
-    }
+        
+    },
   }
+  // {
+  //   client: 'postgresql',
+  //   connection: {
+  //     database: 'my_db',
+  //     user:     'username',
+  //     password: 'password'
+  //   },
+  //   pool: {
+  //     min: 2,
+  //     max: 10
+  //   },
+  //   migrations: {
+  //     tableName: 'knex_migrations'
+  //   }
+  // }
 
 };
