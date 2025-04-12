@@ -1,14 +1,31 @@
 var express = require("express"); 
 var router = express.Router();
 
-router.get('/todos', (req, res) => {
+/**
+ * todo list schema:
+ *  date created    -   datetime
+ *  date modified   -   datetime
+ *  name of writer  -   string
+ *  title   -   string
+ *  text    -   string
+ *  completed   -    bool
+ *  image   -   blob
+ */
+
+router.get('/', (req, res) => {
+    res.json({text: "hello world from todo app autoreloaded!!!"});
+});
+
+router.post('/', (req, res) => {
 
 });
 
-router.post('/todos', (req, res) => {
+router.put('/', (req, res) => {
 
 });
 
-router.
+router.delete('/', (req, res) => {
+
+});
 
 module.exports = router;
