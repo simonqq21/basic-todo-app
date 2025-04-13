@@ -50,11 +50,12 @@ router.get('/', (req, res) => {
     knex('todos').select()
     .orderBy('id', order='asc')
     .then((todos) => {
-        let count = todos.length;
-      res.json({todos, count});
+      let count = todos.length;
+      res.status(200).json({todos, count});
     })
     .catch((error) => {
-        console.log(`error GET todos/: ${error}`);
+      console.log(`error GET todos/: ${error}`);
+      res.sendStatus(500);
     });
 });
 
@@ -65,10 +66,11 @@ router.get('/:id', (req, res) => {
     .where('id', id)
     .first()
     .then((todo) => {
-        res.json({todo});
+      res.status(200).json({todo});
     })
     .catch((error) => {
-        console.log(`error GET todos/:id: ${error}`);
+      console.log(`error GET todos/:id: ${error}`);
+      res.sendStatus(500);
     });
 });
 
@@ -95,39 +97,49 @@ router.post('/', (req, res) => {
     })
     .then(() => {
         console.log('inserted successfully');
+        res.sendStatus(200);
     })
     .catch((error) => {
         console.log(`failed to insert: ${error}`);
+        res.sendStatus(500);
     });
 });
 
 // route to replace an existing todo
 router.put('/:id', (req, res) => {
-  knex('todos').update({written_by: "johannque"})
-  .where('id', '=', '2')
+  let id = req.params.id;
+  let todo = req.body;
+  knex('todos').update(todo)
+  .where('id', id)
   .then(() => {
     console.log('updated sucessfully');
+    res.sendStatus(200);
   })
   .catch((error) => {
     console.log(`failed to update: ${error}`);
+    res.sendStatus(500);
   });
-  
-  knex('todos').update({written_by: "sjque"})
-  .where('id', '=', '2')
-  .where('written_by', '=', 'johannque')
-  .then(() => {
-    console.log('updated sucessfully');
-  })
-  .catch((error) => {
-    console.log(`failed to update: ${error}`);
-  });
-  console.log();
 });
 
-// route to update an existing todo 
-router.patch('/:id', (req, res) => {
-    
-});
+// // route to update an existing todo 
+// router.patch('/:id', (req, res) => {
+//   let id = req.params.id;
+//   let body =req
+//   knex('todos').update({
+//     written_by: "sjque"
+//     updated_at_ts: Date.now(),
+
+//   })
+//   .where('id', id)
+//   .then(() => {
+//     console.log('updated sucessfully');
+//     res.sendStatus(200);
+//   })
+//   .catch((error) => {
+//     console.log(`failed to update: ${error}`);
+//     res.sendStatus(500);
+//   });
+// });
 
 // route to delete an existing todo
 router.delete('/:id', (req, res) => {
@@ -136,9 +148,11 @@ router.delete('/:id', (req, res) => {
     .where('id', id)
     .then(() => {
         console.log('deleted successfully');
+        res.sendStatus(200);
     })
     .catch((error) => {
         console.log(`failed to delete: ${error}`);
+        res.sendStatus(500);
     });
 });
 
