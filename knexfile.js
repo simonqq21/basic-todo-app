@@ -1,3 +1,4 @@
+require('dotenv').config();
 // Update with your config settings.
 
 /**
@@ -15,7 +16,7 @@ module.exports = {
     client: 'postgresql',
     connection: {
       database: 'my_db',
-      user:     'username',
+      user: 'username',
       password: 'password'
     },
     pool: {
@@ -26,36 +27,33 @@ module.exports = {
       tableName: 'knex_migrations'
     }
   },
-
-  production: 
+  production:
   {
     client: 'pg',
     connection: {
-      host: '192.168.5.145',
-      port: 5432,
-      user: 'pguser',
-      database: 'todo_app_db',
-      password: 'Y8y8y8y8!',
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      database: process.env.DB_NAME,
+      password: process.env.DB_PASS,
       ssl: false,
     },
     migrations: {
-        
+
     },
   }
+  // production:
   // {
-  //   client: 'postgresql',
+  //   client: 'pg',
   //   connection: {
-  //     database: 'my_db',
-  //     user:     'username',
-  //     password: 'password'
-  //   },
-  //   pool: {
-  //     min: 2,
-  //     max: 10
+  //     host: '192.168.5.145',
+  //     port: 5432,
+  //     user: 'pguser',
+  //     database: 'todo_app_db',
+  //     password: 'Y8y8y8y8!',
+  //     ssl: false,
   //   },
   //   migrations: {
-  //     tableName: 'knex_migrations'
-  //   }
-  // }
 
+  //   },
 };
