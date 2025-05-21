@@ -6,6 +6,7 @@ var logger = require('morgan');
 const bodyParser = require("body-parser");
 require('dotenv').config();
 const http = require('http');
+var cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -13,6 +14,7 @@ var todosRouter = require('./routes/todos');
 
 var app = express();
 
+app.use(cors());
 console.log(`password = ${process.env.PASSWORD}`);
 // console.log(`backend port = ${process.env.PORT}`);
 // view engine setup

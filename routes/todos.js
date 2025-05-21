@@ -62,10 +62,12 @@ router.get('/', (req, res) => {
 // route to get a single todo 
 router.get('/:id', (req, res) => {
   const id = req.params.id;
+  console.log(`GET todos with id ${id}`);
   knex('todos').select()
     .where('id', id)
     .first()
     .then((todo) => {
+      console.log("response 200 yay");
       res.status(200).json({ todo });
     })
     .catch((error) => {
