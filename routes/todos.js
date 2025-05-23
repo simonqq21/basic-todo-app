@@ -32,7 +32,6 @@ const knex = knex1(knexfile.production);
  *  image   -   blob
  */
 
-
 // drop_tables = true
 // drop_tables = false
 // if (drop_tables) {
@@ -46,9 +45,10 @@ const knex = knex1(knexfile.production);
 // }
 
 // route to get all todos
-router.get('/', (req, res) => {
-  knex('todos').select()
-    .orderBy('id', order = 'asc')
+router.get("/", (req, res) => {
+  knex("todos")
+    .select()
+    .orderBy("id", (order = "asc"))
     .then((todos) => {
       let count = todos.length;
       res.status(200).json({ todos, count });
@@ -59,12 +59,32 @@ router.get('/', (req, res) => {
     });
 });
 
-// route to get a single todo 
-router.get('/:id', (req, res) => {
+// route to get all todos paginated
+router.get("/page/:page", (req, res) => {
+  const page = req.params.page;
+  const limit = req.query.limit ?? 10;
+  knex("todos")
+    .select()
+    .orderBy("id", (order = "asc"))
+    .offset(page)
+    .limit(limit)
+    .then((todos) => {
+      let count = todos.length;
+      res.status(200).json({ todos, count });
+    })
+    .catch((error) => {
+      console.log(`error GET todos/page: ${error}`);
+      res.sendStatus(500);
+    });
+});
+
+// route to get a single todo
+router.get("/:id", (req, res) => {
   const id = req.params.id;
   console.log(`GET todos with id ${id}`);
-  knex('todos').select()
-    .where('id', id)
+  knex("todos")
+    .select()
+    .where("id", id)
     .first()
     .then((todo) => {
       console.log("response 200 yay");
@@ -74,6 +94,26 @@ router.get('/:id', (req, res) => {
       console.log(`error GET todos/:id: ${error}`);
       res.sendStatus(500);
     });
+});
+
+// route to search for a single todo that contains a substring in the title.
+router.get("/search", (req, res) => {
+  const titleSubString = req.query.titleSubString.toLowerCase();
+  if (titleSubString) {
+    knex("todos")
+      .select()
+      .whereILike("title", titleSubString)
+      .then((todos) => {
+        console.log(JSON.stringify(todos));
+        res.status(200).json({ todos });
+      })
+      .catch((error) => {
+        console.log(`error GET todos/search: ${error}`);
+        res.sendStatus(500);
+      });
+  } else {
+    res.sendStatus(400);
+  }
 });
 
 // knex('todos').insert([
@@ -89,17 +129,18 @@ router.get('/:id', (req, res) => {
 // });
 
 // route to create a new todo
-router.post('/', (req, res) => {
-  knex('todos').insert({
-    created_at_ts: Date.now(),
-    written_by: req.body.written_by,
-    title: req.body.title,
-    body: req.body.body,
-    completed: false,
-  })
+router.post("/", (req, res) => {
+  knex("todos")
+    .insert({
+      created_at_ts: Date.now(),
+      written_by: req.body.written_by,
+      title: req.body.title,
+      body: req.body.body,
+      completed: false,
+    })
     .then(() => {
-      console.log('inserted successfully');
-      res.sendStatus(200);
+      console.log("inserted successfully");
+      res.sendStatus(201);
     })
     .catch((error) => {
       console.log(`failed to insert: ${error}`);
@@ -108,13 +149,14 @@ router.post('/', (req, res) => {
 });
 
 // route to replace an existing todo
-router.put('/:id', (req, res) => {
+router.put("/:id", (req, res) => {
   let id = req.params.id;
   let todo = req.body;
-  knex('todos').update(todo)
-    .where('id', id)
+  knex("todos")
+    .update(todo)
+    .where("id", id)
     .then(() => {
-      console.log('updated sucessfully');
+      console.log("updated sucessfully");
       res.sendStatus(200);
     })
     .catch((error) => {
@@ -123,7 +165,7 @@ router.put('/:id', (req, res) => {
     });
 });
 
-// // route to update an existing todo 
+// // route to update an existing todo
 // router.patch('/:id', (req, res) => {
 //   let id = req.params.id;
 //   let body =req
@@ -144,12 +186,13 @@ router.put('/:id', (req, res) => {
 // });
 
 // route to delete an existing todo
-router.delete('/:id', (req, res) => {
+router.delete("/:id", (req, res) => {
   const id = req.params.id;
-  knex('todos').delete()
-    .where('id', id)
+  knex("todos")
+    .delete()
+    .where("id", id)
     .then(() => {
-      console.log('deleted successfully');
+      console.log("deleted successfully");
       res.sendStatus(200);
     })
     .catch((error) => {
