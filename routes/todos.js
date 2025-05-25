@@ -44,28 +44,23 @@ const knex = knex1(knexfile.production);
 //   });
 // }
 
-// route to get all todos
+// route to get todos paginated or search for todos paginated
 router.get("/", (req, res) => {
-  knex("todos")
-    .select()
-    .orderBy("id", (order = "asc"))
-    .then((todos) => {
-      let count = todos.length;
-      res.status(200).json({ todos, count });
-    })
-    .catch((error) => {
-      console.log(`error GET todos/: ${error}`);
-      res.sendStatus(500);
-    });
-});
-
-// route to get all todos paginated
-router.get("/page/:page", (req, res) => {
-  const page = req.params.page;
+  const page = req.query.page ?? 1;
   const limit = req.query.limit ?? 10;
+  const search = req.query.search;
+  console.log(search);
   knex("todos")
     .select()
-    .orderBy("id", (order = "asc"))
+    .orderBy("id", "desc")
+    // search within titles if search string is provided in queries
+    .modify((queryBuilder) => {
+      if (search) {
+        let searchLower = search.toLowerCase();
+        console.log(`search = ${search}`);
+        queryBuilder.whereILike("title", `%${searchLower}%`);
+      }
+    })
     .offset(page)
     .limit(limit)
     .then((todos) => {
@@ -94,26 +89,6 @@ router.get("/:id", (req, res) => {
       console.log(`error GET todos/:id: ${error}`);
       res.sendStatus(500);
     });
-});
-
-// route to search for a single todo that contains a substring in the title.
-router.get("/search", (req, res) => {
-  const titleSubString = req.query.titleSubString.toLowerCase();
-  if (titleSubString) {
-    knex("todos")
-      .select()
-      .whereILike("title", titleSubString)
-      .then((todos) => {
-        console.log(JSON.stringify(todos));
-        res.status(200).json({ todos });
-      })
-      .catch((error) => {
-        console.log(`error GET todos/search: ${error}`);
-        res.sendStatus(500);
-      });
-  } else {
-    res.sendStatus(400);
-  }
 });
 
 // knex('todos').insert([
@@ -148,7 +123,7 @@ router.post("/", (req, res) => {
     });
 });
 
-// route to replace an existing todo
+// route to edit an existing todo
 router.put("/:id", (req, res) => {
   let id = req.params.id;
   let todo = req.body;
