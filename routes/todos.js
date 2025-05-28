@@ -46,10 +46,10 @@ const knex = knex1(knexfile.production);
 
 // route to get todos paginated or search for todos paginated
 router.get("/", (req, res) => {
-  const page = req.query.page ?? 1;
-  const limit = req.query.limit ?? 10;
+  const page = parseInt(req.query.page) ?? 0;
+  const limit = parseInt(req.query.limit) ?? 10;
   const search = req.query.search;
-  console.log(search);
+  // console.log(`search string = ${search}`);
   knex("todos")
     .select()
     .orderBy("id", "desc")
@@ -57,12 +57,12 @@ router.get("/", (req, res) => {
     .modify((queryBuilder) => {
       if (search) {
         let searchLower = search.toLowerCase();
-        console.log(`search = ${search}`);
+        console.log(`search = ${searchLower}`);
         queryBuilder.whereILike("title", `%${searchLower}%`);
       }
     })
-    .offset(page)
     .limit(limit)
+    .offset(0)
     .then((todos) => {
       let count = todos.length;
       res.status(200).json({ todos, count });
