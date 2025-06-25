@@ -1,18 +1,48 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-const bodyParser = require("body-parser");
-require("dotenv").config();
-const http = require("http");
-var cors = require("cors");
+// var createError = require("http-errors");
+// var express = require("express");
+// var path = require("path");
+// var cookieParser = require("cookie-parser");
+// var logger = require("morgan");
+// const bodyParser = require("body-parser");
+// require("dotenv").config();
+// const http = require("http");
+// var cors = require("cors");
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
-var todosRouter = require("./routes/todos");
+import createError from "http-errors";
+import express from "express";
+import cookieParser from "cookie-parser";
+import logger from "morgan";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import http from "http";
+import { Sequelize, DataTypes, Model } from "sequelize";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+console.log(__dirname);
+console.log(__filename);
+
+// const { Sequelize } = require("sequelize");
+dotenv.config();
+
+import indexRouter from "./routes/index.js";
+import usersRouter from "./routes/users.js";
+import todosRouter from "./routes/todos.js";
 
 var app = express();
+const sequelize = new Sequelize(
+  "postgres://postgres:KlSr8xhU@localhost:5432/notes_dev"
+);
+try {
+  await sequelize.authenticate();
+  console.log("Connection has been established successfully.");
+} catch (error) {
+  console.error("Unable to connect to the database:", error);
+}
 
 app.use(cors());
 console.log(`password = ${process.env.PASSWORD}`);
@@ -47,4 +77,4 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-module.exports = app;
+export default app;

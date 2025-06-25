@@ -1,11 +1,12 @@
-var express = require("express");
+import express from "express";
+
 var router = express.Router();
 
 // process.env.NODE_ENV = 'production';
 console.log(`Environment = ${process.env.NODE_ENV}`);
 
-const knex1 = require("knex");
-const knexfile = require("../knexfile");
+import knex1 from "knex";
+import knexfile from "../knexfile.js";
 const knex = knex1(knexfile.production);
 
 // const knex = require("knex")({
@@ -62,7 +63,7 @@ router.get("/", (req, res) => {
       }
     })
     .limit(limit)
-    .offset(0)
+    .offset(limit * (page - 1))
     .then((todos) => {
       let count = todos.length;
       res.status(200).json({ todos, count });
@@ -176,4 +177,5 @@ router.delete("/:id", (req, res) => {
     });
 });
 
-module.exports = router;
+// module.exports = router;
+export default router;

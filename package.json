@@ -2,6 +2,7 @@
   "name": "basic-todo-app",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "start": "nodemon ./bin/www --env production"
   },
@@ -15,8 +16,10 @@
     "http-errors": "~1.6.3",
     "knex": "^3.1.0",
     "morgan": "~1.9.1",
-    "pg": "^8.14.1",
+    "pg": "^8.16.2",
+    "pg-hstore": "^2.3.4",
     "pug": "^2.0.4",
+    "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7"
   }
 }
