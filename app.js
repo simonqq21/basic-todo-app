@@ -31,18 +31,9 @@ dotenv.config();
 
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
-import todosRouter from "./routes/todos.js";
+import todosRouter from "./routes/notes.js";
 
 var app = express();
-const sequelize = new Sequelize(
-  "postgres://postgres:KlSr8xhU@localhost:5432/notes_dev"
-);
-try {
-  await sequelize.authenticate();
-  console.log("Connection has been established successfully.");
-} catch (error) {
-  console.error("Unable to connect to the database:", error);
-}
 
 app.use(cors());
 console.log(`password = ${process.env.PASSWORD}`);
@@ -77,4 +68,7 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
+app.listen(3000, () => {
+  console.log(`Example app listening on port ${3000}`);
+});
 export default app;
