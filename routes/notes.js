@@ -1,5 +1,7 @@
 import express from "express";
-import { Sequelize, sequelize, Note } from "../models/index.js";
+import { Sequelize, Op } from "sequelize";
+import { sequelize, Note } from "../models/index.js";
+import { where } from "sequelize";
 var router = express.Router();
 // process.env.NODE_ENV = 'production';
 console.log(`Environment = ${process.env.NODE_ENV}`);
@@ -43,14 +45,37 @@ console.log(`Environment = ${process.env.NODE_ENV}`);
 // }
 
 // route to get todos paginated or search for todos paginated
-router.get("/", (req, res) => {
-  const page = parseInt(req.query.page) ?? 0;
-  const limit = parseInt(req.query.limit) ?? 10;
+router.get("/", async (req, res) => {
+  const page = isNaN(parseInt(req.query.page)) ? 1 : parseInt(req.query.page);
+  const limit = isNaN(parseInt(req.query.limit))
+    ? 10
+    : parseInt(req.query.limit);
   const search = req.query.search;
+  let notes;
   // console.log(`search string = ${search}`);
+  try {
+    if (search) {
+      notes = await Note.findAll({
+        offset: limit * (page - 1),
+        limit: limit,
+        where: { [Op.iLike]: `%${searchLower}%` },
+        order: [["id", "DESC"]],
+      });
+    } else {
+      notes = await Note.findAll({
+        offset: limit * (page - 1),
+        limit: limit,
+        order: [["id", "DESC"]],
+      });
+    }
+    let count = notes.length;
+    res.status(200).json({ notes, count });
+  } catch (error) {
+    console.log(`error GET todos/page: ${error}`);
+    res.sendStatus(500);
+  }
 
-  const notes = Note.findAll();
-  return notes;
+  // return notes;
 
   // knex("todos")
   //   .select()
@@ -76,21 +101,23 @@ router.get("/", (req, res) => {
 });
 
 // route to get a single todo
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   const id = req.params.id;
   console.log(`GET todos with id ${id}`);
-  knex("todos")
-    .select()
-    .where("id", id)
-    .first()
-    .then((todo) => {
-      console.log("response 200 yay");
-      res.status(200).json({ todo });
-    })
-    .catch((error) => {
-      console.log(`error GET todos/:id: ${error}`);
-      res.sendStatus(500);
-    });
+  const note = await Note.findOne({ where: { id } });
+  res.status(200).json({ note });
+  // knex("todos")
+  //   .select()
+  //   .where("id", id)
+  //   .first()
+  //   .then((todo) => {
+  //     console.log("response 200 yay");
+  //     res.status(200).json({ todo });
+  //   })
+  //   .catch((error) => {
+  //     console.log(`error GET todos/:id: ${error}`);
+  //     res.sendStatus(500);
+  //   });
 });
 
 // knex('todos').insert([
@@ -106,40 +133,64 @@ router.get("/:id", (req, res) => {
 // });
 
 // route to create a new todo
-router.post("/", (req, res) => {
-  knex("todos")
-    .insert({
-      created_at_ts: Date.now(),
+router.post("/", async (req, res) => {
+  try {
+    const note = await Note.create({
       written_by: req.body.written_by,
       title: req.body.title,
       body: req.body.body,
       completed: false,
-    })
-    .then(() => {
-      console.log("inserted successfully");
-      res.sendStatus(201);
-    })
-    .catch((error) => {
-      console.log(`failed to insert: ${error}`);
-      res.sendStatus(500);
     });
+    console.log("inserted successfully");
+    res.sendStatus(201);
+  } catch (error) {
+    console.log(`failed to insert: ${error}`);
+    res.sendStatus(500);
+  }
+
+  // knex("todos")
+  //   .insert({
+  //     created_at_ts: Date.now(),
+  //     written_by: req.body.written_by,
+  //     title: req.body.title,
+  //     body: req.body.body,
+  //     completed: false,
+  //   })
+  //   .then(() => {
+  //     console.log("inserted successfully");
+  //     res.sendStatus(201);
+  //   })
+  //   .catch((error) => {
+  //     console.log(`failed to insert: ${error}`);
+  //     res.sendStatus(500);
+  //   });
 });
 
 // route to edit an existing todo
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   let id = req.params.id;
-  let todo = req.body;
-  knex("todos")
-    .update(todo)
-    .where("id", id)
-    .then(() => {
-      console.log("updated sucessfully");
-      res.sendStatus(200);
-    })
-    .catch((error) => {
-      console.log(`failed to update: ${error}`);
-      res.sendStatus(500);
-    });
+  let noteData = req.body;
+  try {
+    let dbNote = await Note.findOne({ where: { id } });
+    await dbNote.update(noteData);
+    console.log("updated sucessfully");
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(`failed to update: ${error}`);
+    res.sendStatus(500);
+  }
+
+  // knex("todos")
+  //   .update(todo)
+  //   .where("id", id)
+  //   .then(() => {
+  //     console.log("updated sucessfully");
+  //     res.sendStatus(200);
+  //   })
+  //   .catch((error) => {
+  //     console.log(`failed to update: ${error}`);
+  //     res.sendStatus(500);
+  //   });
 });
 
 // // route to update an existing todo
@@ -163,19 +214,27 @@ router.put("/:id", (req, res) => {
 // });
 
 // route to delete an existing todo
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   const id = req.params.id;
-  knex("todos")
-    .delete()
-    .where("id", id)
-    .then(() => {
-      console.log("deleted successfully");
-      res.sendStatus(200);
-    })
-    .catch((error) => {
-      console.log(`failed to delete: ${error}`);
-      res.sendStatus(500);
-    });
+  try {
+    await Note.destroy({ where: { id } });
+    console.log("deleted successfully");
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(`failed to delete: ${error}`);
+    res.sendStatus(500);
+  }
+  // knex("todos")
+  //   .delete()
+  //   .where("id", id)
+  //   .then(() => {
+  //     console.log("deleted successfully");
+  //     res.sendStatus(200);
+  //   })
+  //   .catch((error) => {
+  //     console.log(`failed to delete: ${error}`);
+  //     res.sendStatus(500);
+  //   });
 });
 
 // module.exports = router;

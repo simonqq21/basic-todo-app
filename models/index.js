@@ -9,7 +9,7 @@ try {
 } catch (error) {
   console.error("Unable to connect to the database:", error);
 }
-var generate_tables = false;
+var generate_tables = true;
 if (generate_tables) {
   await sequelize.sync({ force: false });
   console.log("All models were synchronized successfully.");
@@ -38,4 +38,4 @@ export const Note = NoteModel(sequelize, DataTypes);
 //   },
 //   { sequelize, modelName: "Note" }
 // );
-export { Sequelize, sequelize };
+export { sequelize };

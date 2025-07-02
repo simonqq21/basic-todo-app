@@ -6,14 +6,26 @@
     "configurations": [
         
         {
-            "type": "node",
-            "request": "launch",
             "name": "Launch Program",
+            "program": "${workspaceFolder}/app.js",
+            "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "./bin/www"
-            // ${workspaceFolder}\\routes\\todos.js
-        }
+            "type": "node"
+        },
+        
+
+        
+        // {
+        //     "type": "node",
+        //     "request": "launch",
+        //     "name": "Launch Program",
+        //     "skipFiles": [
+        //         "<node_internals>/**"
+        //     ],
+        //     "program": "./bin/www"
+        //     // ${workspaceFolder}\\routes\\todos.js
+        // }
     ]
 }
