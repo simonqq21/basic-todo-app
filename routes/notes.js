@@ -139,7 +139,9 @@ router.post("/", async (req, res) => {
       written_by: req.body.written_by,
       title: req.body.title,
       body: req.body.body,
-      completed: false,
+      completed: req.body.completed,
+      createdAt: req.body.createdAt,
+      updatedAt: req.body.updatedAt,
     });
     console.log("inserted successfully");
     res.sendStatus(201);

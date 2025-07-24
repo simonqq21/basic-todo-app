@@ -1,4 +1,6 @@
 import { Sequelize, DataTypes, Model } from "sequelize";
+import NoteModel from "./note.js";
+
 const sequelize = new Sequelize(
   "postgres://postgres:KlSr8xhU@localhost:5432/notes_dev",
   { define: { freezeTableName: true } }
@@ -9,13 +11,13 @@ try {
 } catch (error) {
   console.error("Unable to connect to the database:", error);
 }
+export const Note = NoteModel(sequelize, DataTypes);
 var generate_tables = true;
 if (generate_tables) {
-  await sequelize.sync({ force: false });
+  await Note.sync({ force: false });
   console.log("All models were synchronized successfully.");
 }
-import NoteModel from "./note.js";
-export const Note = NoteModel(sequelize, DataTypes);
+
 // const Note = sequelize.define("Note", {
 //   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
 //   created_at_ts: { type: DataTypes.BIGINT },

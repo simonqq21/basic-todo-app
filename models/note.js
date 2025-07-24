@@ -2,11 +2,9 @@
 export default function NoteModel(sequelize, DataTypes) {
   return sequelize.define("Note", {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    // created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-    // updated_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
     written_by: { type: DataTypes.STRING, allowNull: false },
-    title: { type: DataTypes.STRING, allowNull: false },
-    body: { type: DataTypes.STRING, allowNull: false },
+    title: { type: DataTypes.STRING(200), allowNull: false },
+    body: { type: DataTypes.STRING(5000), allowNull: false },
     completed: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
