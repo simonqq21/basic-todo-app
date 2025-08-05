@@ -55,10 +55,11 @@ router.get("/", async (req, res) => {
   // console.log(`search string = ${search}`);
   try {
     if (search) {
+      // console.log(`%${search}%`);
       notes = await Note.findAll({
         offset: limit * (page - 1),
         limit: limit,
-        where: { [Op.iLike]: `%${searchLower}%` },
+        where: { title: { [Op.iLike]: `%${search}%` } },
         order: [["id", "DESC"]],
       });
     } else {
